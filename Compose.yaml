@@ -13,13 +13,13 @@ services:
       - 3000:3000
     environment:
       - MONGO_PASS=secret
-      - MONGO_HOST=database  # Changed reference from mongodb to database
+      - MONGO_HOST=database 
     networks:
        - profile-network
     depends_on:
-      - database  # Changed from mongodb to database
+      - database
 
-  database:  # Renamed service from mongodb to database
+  database:
     container_name: mongoDB
     image: mongo:8.0-rc
     environment:
@@ -27,20 +27,23 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=secret
     networks:
        - profile-network
-    volumes:    # NEW
-      - ./data:/db/data
+    volumes:
+      - profiledata:/data/db
 
   mongo-express:
     container_name: express
     image: mongo-express:1.0-20-alpine3.19
-    restart: always
+    restart: always # fixes MongoNetworkError caused by mongodb not being ready when mongo-express starts.
     ports:
       - 8080:8081
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=secret
-      - ME_CONFIG_MONGODB_SERVER=database  # Changed reference from mongodb to database
+      - ME_CONFIG_MONGODB_SERVER=database 
     networks:
        - profile-network
     depends_on:
-      - database  # Changed from mongodb to database
+      - database 
+
+volumes:
+  profiledata:
